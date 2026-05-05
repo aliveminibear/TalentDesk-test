@@ -33,10 +33,10 @@ export const validateFields = (values) => {
     return { success: true, data: result.data, errors: {} };
   }
   const errors = {};
-  for (const issue of result.error.issues) {
+  result.error.issues.forEach((issue) => {
     const key = issue.path[0];
     if (key && !errors[key]) errors[key] = issue.message;
-  }
+  });
   return { success: false, data: null, errors };
 };
 

@@ -1,13 +1,11 @@
 import { config } from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(import.meta.dirname, '..');
 
-config({ path: path.join(__dirname, '../.env') });
+config({ path: path.join(import.meta.dirname, '../.env') });
 const { BACKEND_PORT, FRONTEND_PORT } = process.env;
 
 export default defineConfig({

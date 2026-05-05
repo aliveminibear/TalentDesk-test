@@ -1,10 +1,8 @@
 import { config } from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { createApp } from './app.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.join(__dirname, '../../.env') });
+config({ path: path.join(import.meta.dirname, '../../.env') });
 
 const { BACKEND_PORT } = process.env;
 const app = createApp();

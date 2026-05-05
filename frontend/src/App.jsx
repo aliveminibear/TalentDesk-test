@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import FileDropzone from './components/FileDropzone.jsx';
 import {
   validateFields,
   validateFile,
   MAX_FILE_SIZE,
 } from '@shared/validation.js';
+import FileDropzone from './components/FileDropzone.jsx';
 
 const initialFormData = { name: '', message: '' };
 

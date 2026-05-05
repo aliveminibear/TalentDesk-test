@@ -3,16 +3,13 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { fileURLToPath } from 'url';
 import {
   validateFields,
   validateFile,
   MAX_FILE_SIZE,
 } from '../../shared/validation.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-export const UPLOADS_DIR = path.resolve(__dirname, '../uploads');
+export const UPLOADS_DIR = path.resolve(import.meta.dirname, '../uploads');
 
 const ensureUploadsDir = () => {
   if (!fs.existsSync(UPLOADS_DIR)) {
