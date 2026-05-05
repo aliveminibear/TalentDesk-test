@@ -32,6 +32,19 @@ module.exports = {
         'import/extensions': ['error', 'ignorePackages'],
         // Backend logging is acceptable.
         'no-console': 'off',
+        // Allow vitest/supertest (devDependencies) in test files and configs.
+        'import/no-extraneous-dependencies': [
+          'error',
+          {
+            devDependencies: [
+              '**/*.config.{js,cjs,mjs}',
+              '**/*.test.js',
+              '**/test/**',
+              '**/tests/**',
+              '**/__tests__/**',
+            ],
+          },
+        ],
       },
     },
     {
