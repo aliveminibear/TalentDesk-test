@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import FileDropzone from './components/FileDropzone.jsx';
 
 const initialFormData = { name: '', message: '' };
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const App = () => {
   const [formData, setFormData] = useState(initialFormData);
+  const [file, setFile] = useState(null);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,6 +18,7 @@ const App = () => {
 
   const handleReset = () => {
     setFormData(initialFormData);
+    setFile(null);
     setResponse(null);
     setError(null);
   };
@@ -25,11 +29,12 @@ const App = () => {
     setResponse(null);
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const body = new FormData();
+      body.append('name', formData.name);
+      body.append('message', formData.message);
+      if (file) body.append('file', file);
+
+      const res = await fetch('/api/submit', { method: 'POST', body });
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data?.message || 'Submission failed');
@@ -48,7 +53,7 @@ const App = () => {
         <header className="card__header">
           <h1 id="form-title" className="card__title">Form Submission</h1>
           <p className="card__subtitle">
-            Fill in the form and submit it to the back-end.
+            Fill in the form, optionally attach a file, and submit it to the back-end.
           </p>
         </header>
 
@@ -74,6 +79,16 @@ const App = () => {
               name="message"
               value={formData.message}
               onChange={handleChange}
+            />
+          </div>
+
+          <div className="form__field">
+            <span className="form__label">Attachment</span>
+            <FileDropzone
+              file={file}
+              onFileChange={setFile}
+              maxSize={MAX_FILE_SIZE}
+              disabled={isSubmitting}
             />
           </div>
 
@@ -103,6 +118,20 @@ const App = () => {
         {response && (
           <div className="response" aria-live="polite">
             <h2 className="response__title">Response</h2>
+            {response.file?.path && (
+              <p className="response__file">
+                Stored file:
+                {' '}
+                <a
+                  className="response__link"
+                  href={response.file.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {response.file.path}
+                </a>
+              </p>
+            )}
             <pre className="response__pre">{JSON.stringify(response, null, 2)}</pre>
           </div>
         )}

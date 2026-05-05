@@ -10,9 +10,12 @@ const { BACKEND_PORT, FRONTEND_PORT } = process.env;
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: FRONTEND_PORT,
+    host: '127.0.0.1',
+    port: FRONTEND_PORT ? Number(FRONTEND_PORT) : undefined,
+    strictPort: true,
     proxy: {
-      '/api': `http://localhost:${BACKEND_PORT}`,
+      '/api': `http://127.0.0.1:${BACKEND_PORT}`,
+      '/uploads': `http://127.0.0.1:${BACKEND_PORT}`,
     },
   },
 });
