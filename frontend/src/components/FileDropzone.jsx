@@ -14,7 +14,9 @@ const formatBytes = (bytes) => {
   return `${value.toFixed(precision)} ${units[unitIndex]}`;
 };
 
-const FileDropzone = ({ file, onFileChange, maxSize, disabled }) => {
+const FileDropzone = ({
+  file, onFileChange, maxSize, disabled, hasError,
+}) => {
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (acceptedFiles && acceptedFiles.length > 0) {
@@ -47,7 +49,7 @@ const FileDropzone = ({ file, onFileChange, maxSize, disabled }) => {
   const dropzoneClasses = [
     'dropzone',
     isDragActive ? 'dropzone--active' : '',
-    isDragReject ? 'dropzone--reject' : '',
+    isDragReject || hasError ? 'dropzone--reject' : '',
     disabled ? 'dropzone--disabled' : '',
   ]
     .filter(Boolean)

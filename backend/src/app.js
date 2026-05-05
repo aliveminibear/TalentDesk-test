@@ -4,6 +4,11 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import {
+  validateFields,
+  validateFile,
+  MAX_FILE_SIZE,
+} from '../../shared/validation.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -13,6 +18,11 @@ const ensureUploadsDir = () => {
   if (!fs.existsSync(UPLOADS_DIR)) {
     fs.mkdirSync(UPLOADS_DIR, { recursive: true });
   }
+};
+
+const safeUnlink = (filePath) => {
+  if (!filePath) return;
+  fs.unlink(filePath, () => {});
 };
 
 const buildStorage = () => multer.diskStorage({
@@ -40,11 +50,20 @@ export const createApp = () => {
 
   const upload = multer({
     storage: buildStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 },
+    limits: { fileSize: MAX_FILE_SIZE },
   });
 
   app.post('/api/submit', upload.single('file'), (req, res) => {
-    const { name, message } = req.body;
+    const fieldsResult = validateFields(req.body);
+    const fileError = validateFile(req.file);
+
+    if (!fieldsResult.success || fileError) {
+      safeUnlink(req.file?.path);
+      const errors = { ...fieldsResult.errors };
+      if (fileError) errors.file = fileError;
+      return res.status(400).json({ message: 'Validation failed', errors });
+    }
+
     const filePayload = req.file
       ? {
         originalName: req.file.originalname,
@@ -55,13 +74,20 @@ export const createApp = () => {
       }
       : null;
 
-    res.json({ name, message, file: filePayload });
+    return res.json({
+      name: fieldsResult.data.name,
+      message: fieldsResult.data.message,
+      file: filePayload,
+    });
   });
 
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
-      return res.status(400).json({ message: err.message, code: err.code });
+      const errors = err.field === 'file' || err.code === 'LIMIT_FILE_SIZE'
+        ? { file: err.message }
+        : {};
+      return res.status(400).json({ message: err.message, code: err.code, errors });
     }
     return res.status(500).json({ message: err.message || 'Internal server error' });
   });
