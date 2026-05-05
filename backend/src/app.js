@@ -19,11 +19,7 @@ const ensureUploadsDir = () => {
 
 const safeUnlink = (filePath) => {
   if (!filePath) return;
-  try {
-    fs.unlinkSync(filePath);
-  } catch (_err) {
-    // Ignore: file may already have been removed.
-  }
+  try { fs.unlinkSync(filePath); } catch { /* ignore */ }
 };
 
 const buildStorage = () => multer.diskStorage({

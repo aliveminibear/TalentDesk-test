@@ -28,11 +28,8 @@ module.exports = {
         sourceType: 'module',
       },
       rules: {
-        // Native Node ESM requires explicit file extensions in imports.
         'import/extensions': ['error', 'ignorePackages'],
-        // Backend logging is acceptable.
         'no-console': 'off',
-        // Allow vitest/supertest (devDependencies) in test files and configs.
         'import/no-extraneous-dependencies': [
           'error',
           {
@@ -72,14 +69,9 @@ module.exports = {
         },
       },
       rules: {
-        // Modern React/Vite projects don't need React in scope or PropTypes
-        // (and we're not using TypeScript here).
         'react/react-in-jsx-scope': 'off',
         'react/prop-types': 'off',
-        // react-dropzone returns prop bundles via getRootProps/getInputProps
-        // that are designed to be spread onto elements.
         'react/jsx-props-no-spreading': 'off',
-        // Allow arrow-function components, which is the project's style.
         'react/function-component-definition': [
           'error',
           {
@@ -87,21 +79,15 @@ module.exports = {
             unnamedComponents: 'arrow-function',
           },
         ],
-        // <label htmlFor="..."> is HTML-valid on its own; allow either the
-        // wrapping form or the htmlFor form.
         'jsx-a11y/label-has-associated-control': [
           'error',
           { assert: 'either', depth: 25 },
         ],
-        // Native ESM in the browser via Vite needs explicit .js/.jsx extensions
-        // for relative imports to keep parity with the backend.
         'import/extensions': [
           'error',
           'ignorePackages',
           { js: 'always', jsx: 'always' },
         ],
-        // Vite's dev/test-only deps are pulled in as devDependencies; allow
-        // them in config and test files.
         'import/no-extraneous-dependencies': [
           'error',
           {
